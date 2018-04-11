@@ -1,21 +1,35 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
 	"net/http"
 	//	"gopkg.in/ldap.v2"
+	"fmt"
 
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 )
 
-func homeHandler(c echo.Context) error {
-	body, err := ioutil.ReadAll(c.Request().Body)
-	if err != nil {
-		fmt.Printf("ERROR: %v\n", err)
+type Input struct {
+	Apiversion string `json:"apiVersion" form:"apiVersion" query:"apiVersion"`
+	Kind       string `json:"kind" form:"kind" query:"kind"`
+	Spec       struct {
+		Token string `json:"token" form:"token" query:"token"`
+	} `json:"spec" form:"spec" query:"spec"`
+}
+
+func homeHandler(c echo.Context) (err error) {
+	//body, err := ioutil.ReadAll(c.Request().Body)
+	inputCH := new(Input)
+
+	if err = c.Bind(inputCH); err != nil {
+		fmt.Printf("ERROR?! %v", err)
+		//e.Logger(err)
+		return
 	}
-	return c.JSONPretty(http.StatusOK, body, "  ")
+
+	fmt.Printf("INPUT RECEIVED: %v\n", inputCH)
+
+	return c.JSON(http.StatusOK, inputCH)
 	//	fmt.Printf("BEARER TOKEN: %v\n", c.Body)
 
 	/*getBearerToken := r.Body
@@ -58,9 +72,10 @@ func main() {
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(middleware.BodyDump(func(c echo.Context, reqBody, resBody []byte) {}))
 
 	//e.File("/", "./index.html")
-	e.GET("/", homeHandler)
+	e.POST("/", homeHandler)
 
-	e.Logger.Fatal(e.Start(":8086"))
+	e.Logger.Fatal(e.StartTLS(":8086", "/etc/cleathitch/tls/ch-tls.crt", "/etc/cleathitch/tls/ch-tls.key"))
 }

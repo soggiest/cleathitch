@@ -62,10 +62,16 @@ spec:
         volumeMounts:
         - name: config-volume
           mountPath: /etc/cleathitch
+        - name: tls
+          mountPath: /etc/cleathitch/tls
       volumes:
       - name: config-volume
         configMap:
           name: cleathitch
+      - name: tls
+        secret:
+          defaultMode: 420
+          secretName: cleathitchsecret
 ---
 apiVersion: v1
 kind: Service
