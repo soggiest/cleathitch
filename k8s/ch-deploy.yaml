@@ -1,0 +1,85 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: system:serviceaccount:kube-system:cleathitch
+rules:
+- apiGroups:
+  - "*"
+  resources:
+  - "*"
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: system:serviceaccount:kube-system:cleathitch
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:serviceaccount:kube-system:cleathitch
+subjects:
+- kind: ServiceAccount
+  name: cleathitch
+  namespace: kube-system
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cleathitch
+
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: cleathitch
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: cleathitch
+    spec:
+      serviceAccountName: cleathitch
+      containers:
+      - name: cleathitch
+        image: quay.io/nicholas_lane/cleathitch:v0.0.1
+        resources:
+            requests:
+                memory: "128Mi"
+                cpu: "100m"
+            limits:
+                memory: "512Mi"
+                cpu: "150m"
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/cleathitch
+      volumes:
+      - name: config-volume
+        configMap:
+          name: cleathitch
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cleathitch
+  namespace: cleathitch 
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+  - name: fio
+    nodePort: 32002
+    port: 8086
+    protocol: TCP
+    targetPort: 8086
+  selector:
+    app: cleathitch 
+  sessionAffinity: None
+  type: NodePort
