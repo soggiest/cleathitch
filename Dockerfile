@@ -1,8 +1,8 @@
 FROM golang:1.9.2 AS build
 ARG GITHUB_TOKEN
-COPY . /go/src/github.com/soggiest/fio
+COPY . /go/src/github.com/soggiest/cleathitch
 
-WORKDIR /go/src/github.com/soggiest/fio
+WORKDIR /go/src/github.com/soggiest/cleathitch
 RUN git config --global \
 url."https://${GITHUB_TOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/" && \
     go get -d ./... && \
@@ -11,5 +11,5 @@ url."https://${GITHUB_TOKEN}:x-oauth-basic@github.com/".insteadOf "https://githu
 # copy the binary from the build stage to the final stage
 FROM alpine:3.6
 # COPY index.html /index.html
-COPY --from=build /go/src/github.com/soggiest/fio/app /fio
-CMD ["/fio"]
+COPY --from=build /go/src/github.com/soggiest/cleathitch /cleathitch
+CMD ["/cleathitch"]

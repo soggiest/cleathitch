@@ -7,6 +7,7 @@ import (
 	//	"gopkg.in/ldap.v2"
 
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 )
 
 func homeHandler(c echo.Context) error {
@@ -53,6 +54,10 @@ func main() {
 	//cfg := config.ReadConfig(*cfgFile)
 
 	e := echo.New()
+
+	// Middleware
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
 
 	//e.File("/", "./index.html")
 	e.GET("/", homeHandler)
