@@ -11,5 +11,5 @@ url."https://${GITHUB_TOKEN}:x-oauth-basic@github.com/".insteadOf "https://githu
 # copy the binary from the build stage to the final stage
 FROM alpine:3.6
 # COPY index.html /index.html
-COPY --from=build /go/src/github.com/soggiest/cleathitch /cleathitch
+COPY --from=build /go/src/github.com/soggiest/cleathitch/app /cleathitch
 CMD ["/cleathitch"]
