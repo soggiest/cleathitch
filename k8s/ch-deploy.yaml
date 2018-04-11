@@ -51,6 +51,7 @@ spec:
       containers:
       - name: cleathitch
         image: quay.io/nicholas_lane/cleathitch:v0.0.1
+        imagePullPolicy: Always
         resources:
             requests:
                 memory: "128Mi"
