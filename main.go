@@ -77,5 +77,5 @@ func main() {
 	//e.File("/", "./index.html")
 	e.POST("/", homeHandler)
 
-	e.Logger.Fatal(e.StartTLS(":8086", "/etc/cleathitch/tls/ch-tls.crt", "/etc/cleathitch/tls/ch-tls.key"))
+	e.Logger.Fatal(e.StartTLS(":8086", "/etc/cleathitch-tls/ch-tls.crt", "/etc/cleathitch-tls/ch-tls.key"))
 }

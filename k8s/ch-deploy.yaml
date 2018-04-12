@@ -63,7 +63,7 @@ spec:
         - name: config-volume
           mountPath: /etc/cleathitch
         - name: tls
-          mountPath: /etc/cleathitch/tls
+          mountPath: /etc/cleathitch-tls
       volumes:
       - name: config-volume
         configMap:
