@@ -11,9 +11,11 @@ import (
 type Config struct {
 	// The host and optional port of the LDAP server. If port isn't supplied, it will be
 	// guessed based on the TLS configuration. 389 or 636.
-	Host string `yaml:"host" envconfig:"host"`
+	LDAPHost string `yaml:"ldapHost" envconfig:"ldapHost"`
 
-	Port string `yaml:"port" envconfig:"port"`
+	LDAPPort string `yaml:"ldapPort" envconfig:"ldapP:ort"`
+
+	Protocol string `yaml:"protocol" envconfig:"protocol"`
 
 	// Required if LDAP host does not use TLS.
 	InsecureNoSSL bool `yaml:"insecure_no_ssl" envconfig:"insecure_no_ssl"`
@@ -34,15 +36,15 @@ type Config struct {
 
 	// BindDN and BindPW for an application service account. The connector uses these
 	// credentials to search for users and groups.
-	BindDN string `yaml:"bind_dn" envconfig:"bind_dn"`
-	BindPW string `yaml:"bind_pw" envconfig:"bind_pw"`
+	BindDN string `yaml:"bindDN" envconfig:"bindDN"`
+	BindPW string `yaml:"bindPW" envconfig:"bindPW"`
 
 	// UsernamePrompt allows users to override the username attribute (displayed
 	// in the username/password prompt). If unset, the handler will use
 	// "Username".
 	UsernamePrompt string `yaml:"usernamePrompt"`
 
-	// User entry search configuration.
+	/* // User entry search configuration.
 	UserSearch struct {
 		// BaseDN to start the search from. For example "cn=users,dc=example,dc=com"
 		BaseDN string `yaml:"baseDN"`
@@ -65,30 +67,14 @@ type Config struct {
 		NameAttr  string `yaml:"nameAttr"`  // No default.
 
 	} `yaml:"userSearch"`
-
+	*/
 	// Group search configuration.
 	GroupSearch struct {
 		// BaseDN to start the search from. For example "cn=groups,dc=example,dc=com"
 		BaseDN string `yaml:"baseDN"`
 
-		// Optional filter to apply when searching the directory. For example "(objectClass=posixGroup)"
-		Filter string `yaml:"filter"`
-
-		Scope string `yaml:"scope"` // Defaults to "sub"
-
-		// These two fields are use to match a user to a group.
-		//
-		// It adds an additional requirement to the filter that an attribute in the group
-		// match the user's attribute value. For example that the "members" attribute of
-		// a group matches the "uid" of the user. The exact filter being added is:
-		//
-		//   (<groupAttr>=<userAttr value>)
-		//
-		UserAttr  string `yaml:"userAttr"`
-		GroupAttr string `yaml:"groupAttr"`
-
-		// The attribute of the group that represents its name.
-		NameAttr string `yaml:"nameAttr"`
+		// Username to search for
+		Username string `yaml:"username"`
 	} `yaml:"groupSearch"`
 }
 

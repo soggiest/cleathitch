@@ -1,12 +1,29 @@
 package main
 
 import (
+	"flag"
 	"net/http"
-	//	"gopkg.in/ldap.v2"
+
+	"github.com/soggiest/cleathitch/connector"
+
 	"fmt"
+
+	jwt "github.com/dgrijalva/jwt-go"
+
+	k8sauth "k8s.io/api/authentication/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
+	"github.com/soggiest/cleathitch/config"
+)
+
+const (
+	v1Prefix = "k8s-aws-v1."
+)
+
+var (
+	cfg config.Config
 )
 
 type Input struct {
@@ -18,7 +35,9 @@ type Input struct {
 }
 
 func homeHandler(c echo.Context) (err error) {
-	//body, err := ioutil.ReadAll(c.Request().Body)
+
+	fmt.Printf("CONFIG SHIT: %v\n", cfg)
+
 	inputCH := new(Input)
 
 	if err = c.Bind(inputCH); err != nil {
@@ -27,45 +46,50 @@ func homeHandler(c echo.Context) (err error) {
 		return
 	}
 
-	fmt.Printf("INPUT RECEIVED: %v\n", inputCH)
+	jwtToken, err := parseToken(inputCH.Spec.Token)
+	if err != nil {
+		fmt.Printf("ERROR-PARSE: %v\n", err)
+	}
 
-	return c.JSON(http.StatusOK, inputCH)
-	//	fmt.Printf("BEARER TOKEN: %v\n", c.Body)
+	jwtClaims := jwtToken.Claims.(jwt.MapClaims)
 
-	/*getBearerToken := r.Body
-	modifyBearerToken := bearertokenshit(getBearerToken)
+	//TODO: Make this part of the config, it should be defineable by the suer
+	username := fmt.Sprint(jwtClaims["name"])
+	groups := connector.GetGroups(cfg, username)
 
-	jsonBody := '{
-		"apiVersion": "authentication.k8s.io/v1beta1",
-		"kind": "TokenReview",
-		"status": {
-		  "authenticated": true,
-		  "user": {
-			"username": "heptio",
-			"uid": "42",
-			"groups": [
-			  "developers",
-			  "qa"
-			],
-			"extra": {
-			  "extrafield1": [
-				"extravalue1",
-				"extravalue2"
-			  ]
-			}
-		  }
+	k8sauth := k8sauth.TokenReview{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: k8sauth.SchemeGroupVersion.String(),
+			Kind:       "TokenReview",
+		},
+		Status: k8sauth.TokenReviewStatus{
+			Authenticated: true,
+			User: k8sauth.UserInfo{
+				Username: username,
+				UID:      "42",
+				Groups:   groups,
+			},
+		},
+	}
+	return c.JSON(http.StatusOK, k8sauth)
+}
+
+func parseToken(idToken string) (*jwt.Token, error) {
+	token, _ := jwt.Parse(idToken, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("There was an error")
 		}
-	  }'
-
-	  WRITETOHTTP(jsonBody, w)
-	*/
+		return []byte("kid"), nil
+	})
+	return token, nil
 }
 
 func main() {
-	//	cfgFile := flag.String("config", "", "The config file to use.")
-	//	flag.Parse()
 
-	//cfg := config.ReadConfig(*cfgFile)
+	cfgFile := flag.String("config", "/etc/cleathitch/config.yaml", "The config file to use.")
+	flag.Parse()
+
+	cfg = config.ReadConfig(*cfgFile)
 
 	e := echo.New()
 
