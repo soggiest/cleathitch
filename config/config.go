@@ -44,12 +44,12 @@ type Config struct {
 	// "Username".
 	UsernamePrompt string `yaml:"usernamePrompt"`
 
-	/* // User entry search configuration.
+	// User entry search configuration.
 	UserSearch struct {
 		// BaseDN to start the search from. For example "cn=users,dc=example,dc=com"
 		BaseDN string `yaml:"baseDN"`
 
-		// Optional filter to apply when searching the directory. For example "(objectClass=person)"
+		//REQUIRED filter to apply when searching the directory. For example "(objectClass=person)"
 		Filter string `yaml:"filter"`
 
 		// Attribute to match against the inputted username. This will be translated and combined
@@ -62,19 +62,21 @@ type Config struct {
 		Scope string `yaml:"scope"`
 
 		// A mapping of attributes on the user entry to claims.
-		IDAttr    string `yaml:"idAttr"`    // Defaults to "uid"
-		EmailAttr string `yaml:"emailAttr"` // Defaults to "mail"
-		NameAttr  string `yaml:"nameAttr"`  // No default.
+		IDAttr     string `yaml:"idAttr"`     // Defaults to "sAMAccount"
+		GroupsAttr string `yaml:"groupsAttr"` // Defaults to "memberOf"
+		NameAttr   string `yaml:"nameAttr"`   // No default.
 
 	} `yaml:"userSearch"`
-	*/
+
 	// Group search configuration.
 	GroupSearch struct {
 		// BaseDN to start the search from. For example "cn=groups,dc=example,dc=com"
 		BaseDN string `yaml:"baseDN"`
 
-		// Username to search for
-		Username string `yaml:"username"`
+		Filter string `yaml:"filter"`
+		// A mapping of attributes on the user entry to claims.
+		NameAttr string `yaml:"nameAttr"` // No default.
+
 	} `yaml:"groupSearch"`
 }
 

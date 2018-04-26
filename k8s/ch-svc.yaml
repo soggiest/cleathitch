@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cleathitch
+  namespace: cleathitch
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+  - name: fio
+    nodePort: 32002
+    port: 8086
+    protocol: TCP
+    targetPort: 8086
+  selector:
+    app: cleathitch
+  sessionAffinity: None
+  type: NodePort

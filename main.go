@@ -36,12 +36,9 @@ type Input struct {
 
 func homeHandler(c echo.Context) (err error) {
 
-	fmt.Printf("CONFIG SHIT: %v\n", cfg)
-
 	inputCH := new(Input)
 
 	if err = c.Bind(inputCH); err != nil {
-		fmt.Printf("ERROR?! %v", err)
 		//e.Logger(err)
 		return
 	}
@@ -53,7 +50,7 @@ func homeHandler(c echo.Context) (err error) {
 
 	jwtClaims := jwtToken.Claims.(jwt.MapClaims)
 
-	//TODO: Make this part of the config, it should be defineable by the suer
+	//TODO: Make this part of the config, it should be defineable by the user
 	username := fmt.Sprint(jwtClaims["name"])
 	groups := connector.GetGroups(cfg, username)
 
