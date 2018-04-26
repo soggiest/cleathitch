@@ -26,12 +26,13 @@ The Kuberentes API requires all communication with is secured. To facilitate thi
   * In the `[ v3_req ]` section include both:
     * `basicConstraints = CA:TRUE`
     * `subjectAltName=@alternate_names`
-  * Add a the following as a section:
+  * Add the following as a section:
     ```
 [ alternate_names ]
 IP.1 = <WORKER NODE 1 IP ADDRESS>
 IP.2 = <WORKER NODE 2 IP ADDRESS>
-```
+    ```
+
     * NOTE: Add each worker node's IP address as an IP alternate name
   * Using the SSL config defined above create an SSL signing cert using a CA trusted by the Kubernetes API server:
     * If the Kubernetes cluster was created using `kubeadm` a tursted CA cert can most likely be found at `/etc/kubernetes/pki` on one of the Control Plane nodes.
