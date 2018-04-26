@@ -27,11 +27,11 @@ The Kuberentes API requires all communication with is secured. To facilitate thi
     * `basicConstraints = CA:TRUE`
     * `subjectAltName=@alternate_names`
   * Add the following as a section:
-    ```
+```
 [ alternate_names ]
 IP.1 = <WORKER NODE 1 IP ADDRESS>
 IP.2 = <WORKER NODE 2 IP ADDRESS>
-    ```
+```
 
     * NOTE: Add each worker node's IP address as an IP alternate name
   * Using the SSL config defined above create an SSL signing cert using a CA trusted by the Kubernetes API server:
@@ -67,8 +67,5 @@ Create a secret containing a TLS certificate and it's key.
 Deploy the Cleathitch App:
 
 `kubectl -n cleathitch apply -f k8s/ch-deploy.yaml`
-
-
-## Verifying Access Controls are Working
 
 
