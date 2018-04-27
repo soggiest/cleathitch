@@ -1,19 +1,18 @@
- CleatHitch
+# Cleathitch
 
 A Kubernetes Webhook Token Authenticator service that provides group information to authentication requests. 
 
 ## Deploying
 
-Before deploying CleatHitch, modify k8s/ch-configmap.yaml file to point to the appropriate Identity Provider and lookup information to gather group information for user requests.
+Before deploying Cleathitch, modify k8s/ch-configmap.yaml file to point to the appropriate Identity Provider and lookup information to gather group information for user requests.
 
-* NOTE: At the moment CleatHitch only supports:
+* NOTE: At the moment Cleathitch only supports:
   * LDAP 
 
-* `kubectl create namespace cleathitch`
-* `kubectl -n cleathitch apply -f k8s/ch-configmap.yaml`
+* `kubectl create namespace Cleathitch`
 
-Deploy the CleatHitch NodePort Service:
-* `kubectl -n cleathitch apply -f k8s/ch-svc.yaml`
+Deploy the Cleathitch NodePort Service:
+* `kubectl -n Cleathitch apply -f k8s/ch-svc.yaml`
 
 The Kuberentes API requires all communication with is secured. To facilitate this a TLS key and cert will need to be created that the API server cert trusts. If a trusted TLS cert already exists that points to every node the cluster via an IP SAN field, feel free to skip the following steps. To create a self-signed certificate that the API server trusts:
 
@@ -53,9 +52,11 @@ Copy the SSL certs created above into this new directory:
 Copy the Webhook config into the webhook directory:
   * `cp k8s/ch-webhook.yaml /etc/kubernetes/webhook`
 
-Modify the CleatHitch Webhook config file:
-  * Modify the `server` line to point to the CleatHitch NodePort service.
-  * Modify `certificate-authority` to point to the certificate authority used to create the CleatHitch SSL cert.
+Modify the Cleathitch Webhook config file:
+  * Modify the `server` line to point to the Cleathitch NodePort service.
+  * Modify `certificate-authority` to point to the certificate authority used to create the Cleathitch SSL cert.
+
+* NOTE: The Webhook directory and all of its contents must exist on every API Server node.
 
 
 Create a secret containing a TLS certificate and it's key.
@@ -64,8 +65,35 @@ Create a secret containing a TLS certificate and it's key.
 
  * NOTE: Cleathitch currently expects the TLS cert and key to be named `tls.crt` and `tls.key`
 
+
+Modify the Cleathitch Config map file to include:
+```
+apiVersion: v1
+data:
+  config.yaml: |
+    ldapHost: <LDAP Hostname to use for searching> 
+    ldapPort: <LDAP Port to use when communicating with LDAP>
+    bindDN: <Username to use when searching the LDAP server>
+    bindPW: <Password to use when searching the LDAP server>
+    userSearch:
+      baseDN: <base DN to use when searching for users>
+      filter: <Filter to use to define user objects. Examples: `(objectClass: user)`, `(objectClass: posixAccount)`>
+      idAttr: <LDAP Attribute to use when searching for users, defaults to `sAMAccountName`>
+      emailAttr: <OPTIONAL - NOT CURRENTLY USED - Attribute to use for email addresses>
+      groupsAttr: <Attribute to use to gather group names. Defaults to `memberOf`>
+    groupSearch:
+      baseDN: <base DN to use when searching for groups> 
+      filter: <Filter to use to define user objects. Examples: `(objectClass: group)`, `(objectClass: groupOfNames)`>
+      nameAttr: <LDAP Attribute to use to return in the authentication token>
+kind: ConfigMap
+metadata:
+  name: cleathitch
+```
+Apply the Cleathitch ConfigMap:
+  * `kubectl -n cleathitch apply -f k8s/ch-configmap.yaml`
+
 Deploy the Cleathitch App:
 
-`kubectl -n cleathitch apply -f k8s/ch-deploy.yaml`
+`kubectl -n Cleathitch apply -f k8s/ch-deploy.yaml`
 
 
