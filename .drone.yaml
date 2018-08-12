@@ -1,0 +1,5 @@
+pipeline:
+  docker:
+    image: plugins/docker
+    repo: quay.io/nicholas_lane/cleathitch:drone
+    dockerfile: Dockerfile
