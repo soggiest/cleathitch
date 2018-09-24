@@ -1,11 +1,7 @@
-# clusters refers to the remote service. 15 Create a secret containing a TLS certificate and it's key.
- 16 
- 17 `kubectl create secret generic cleathitchsecret --from-file=./t    ls.cert --from-file=./tls.key`
-
 clusters:
   - name: cleathitch
     cluster:
-      server: https://192.168.107.102:32002
+      server: https://<WORKER NODE IP ADDRESS>:32002
       certificate-authority: /etc/kubernetes/pki/ca.crt
 
 # users refers to the API server's webhook configuration.
