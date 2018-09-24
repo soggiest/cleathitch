@@ -5,22 +5,22 @@ data:
     port: 8086
     insecure_no_ssl: true
     insecure_skip_verify: true
-    ldaphost: 192.168.107.10:8389
-    bindDN: cn=admin,dc=my-company,dc=com
-    bindPW: heptonian
+    ldaphost: 
+    bindDN: 
+    bindPW: 
     userSearch:
-      baseDN: dc=my-company,dc=com
-      filter: "(objectClass: posixAccount)"
-      username: uid
-      idAttr: DN
-      emailAttr: cn
-      nameAttr: cn
+      baseDN: 
+      filter: ""
+      username: 
+      idAttr: 
+      emailAttr: 
+      nameAttr: 
     groupSearch:
-      baseDN: dc=my-company,dc=com
-      filter: "(objectClass=posixGroup)"
-      userAttr: uid 
-      groupAttr: memberUid
-      nameAttr: cn
+      baseDN: 
+      filter: ""
+      userAttr: 
+      groupAttr: 
+      nameAttr: 
 kind: ConfigMap
 metadata:
   name: cleathitch 
